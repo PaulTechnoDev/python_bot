@@ -1,12 +1,24 @@
 import os
 from dotenv import load_dotenv
-import telebot
+from aiogram import Bot, Dispatcher, executor, types
+import api
+
+users = ['suluguni_official', "roman_sysoev", 'ibaka222', 'restoratorgame', 'zbyka13', 'lilit9n', 'olyashaa',
+         'igrog077', 'dokkorki']
+
+params = {
+    'user_login': users
+}
+ggUsers = 'lilit9n,gantver1'
 
 load_dotenv()
-bot = telebot.TeleBot(os.getenv('API'))
+bot = Bot(os.getenv('API'))
+dp = Dispatcher(bot)
+
+@dp.message_handler(commands='stream')
+async def start(message: types.Message):
+    await message.reply('\n'.join(api.getTwitchusers(params) + api.getGGusers(ggUsers)), disable_web_page_preview=True)
 
 
-@bot.message_handlers(commands=['start'])
-def start(message):
-    bot.send_message(message.chat.id, '<a>Привет</a>', parse_mode='html')
-
+if __name__ == '__main__':
+    executor.start_polling(dp, skip_updates=True)
